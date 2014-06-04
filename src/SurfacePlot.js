@@ -233,6 +233,20 @@ SurfacePlot.prototype.cleanUp = function(){
     this.surfacePlot = null;
 }
 
+/**
+ * Provides requestAnimationFrame in a cross browser way.
+ */
+window.requestAnimFrame = (function() {
+  return window.requestAnimationFrame ||
+         window.webkitRequestAnimationFrame ||
+         window.mozRequestAnimationFrame ||
+         window.oRequestAnimationFrame ||
+         window.msRequestAnimationFrame ||
+         function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+           window.setTimeout(callback, 1000/60);
+         };
+})();
+
 /*
  * This class does most of the work.
  * *********************************
@@ -1245,9 +1259,11 @@ JSSurfacePlot = function(x, y, width, height, colourGradient, targetElement, fil
         var canUseWebGL = false;
         
         try {
-            this.gl = canvas.getContext("experimental-webgl", {
+            this.gl = canvas.getContext("webgl", {
                 alpha: false
-            });
+            }) || canvas.getContext("experimental-webgl", {
+                alpha: false
+            }) ;
             this.gl.viewportWidth = canvas.width;
             this.gl.viewportHeight = canvas.height;
         } 
